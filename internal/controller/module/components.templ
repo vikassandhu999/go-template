@@ -1,0 +1,97 @@
+package module
+
+import "betterx/model"
+
+templ Layout(name string) {
+	<html class="sl-theme-dark">
+		<head>
+			<title>{ name }</title>
+			<link type="text/css" rel="stylesheet" href="/static/bootstrap-grid.css"/>
+			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/dark.css"/>
+			<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/shoelace-autoloader.js"></script>
+			<style>
+				body {
+					margin: 0;
+					padding: 0;
+			 	}
+			 </style>
+		</head>
+		<body>
+			{ children... }
+		</body>
+	</html>
+}
+
+templ Header() {
+	<header class="d-flex container">
+		<h2>Betterx</h2>
+	</header>
+}
+
+templ ShowModule(module *model.Module) {
+	<sl-card class="my-2">
+		<strong>{ module.Category }</strong>
+		<br/>
+		{ module.Purpose }
+		<br/>
+		<small>{ module.Domain }</small>
+	</sl-card>
+}
+
+templ ShowError(err error) {
+	<sl-alert variant="danger" open>
+		<sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+		<strong>{ err.Error() }</strong>
+		<br/>
+	</sl-alert>
+}
+
+templ Index(modules []model.Module, err error) {
+	@Layout("Modules") {
+		@Header()
+		<main class="container">
+			if err!=nil {
+				@ShowError(err)
+			} else {
+				<sl-button href="/modules/create">New</sl-button>
+				<div class="d-flex flex-column py-2">
+					for _,m:=range modules {
+						@ShowModule(&m)
+					}
+				</div>
+			}
+		</main>
+	}
+}
+
+templ Create( err error ) {
+	@Layout("Create module") {
+		@Header()
+		<main class="container">
+			if err!=nil {
+				@ShowError(err)
+			} else {
+				<div class="d-flex align-items-center">
+					<sl-button href="/modules">Back</sl-button>
+					// <h1 class="ms-1">Create module</h1>
+				</div>
+				<form class="input-validation-required my-4" method="post" action="/modules">
+					<sl-input name="purpose" label="Purpose" required></sl-input>
+					<br/>
+					<sl-select name="domain" label="Domain" clearable required>
+						<sl-option value="fitness">Fitness</sl-option>
+						<sl-option value="mental-health">Mental health</sl-option>
+						<sl-option value="yoga">Yoga</sl-option>
+						<sl-option value="other">Other</sl-option>
+					</sl-select>
+					<br/>
+					<sl-select name="category" label="Category" clearable required>
+						<sl-option value="strength">Strength</sl-option>
+					</sl-select>
+					<br/>
+					<sl-button style="float: right" type="submit" variant="primary">Create</sl-button>
+				</form>
+			}
+		</main>
+	}
+}

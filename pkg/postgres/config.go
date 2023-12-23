@@ -5,12 +5,12 @@ import (
 )
 
 type Config struct {
-	Host     string `env:"PG_DB_HOST"`
-	Port     string `env:"PG_DB_PORT"`
-	Name     string `env:"PG_DB_NAME"`
-	User     string `env:"PG_DB_USER"`
-	Password string `env:"PG_DB_PASSWORD"`
-	SSLMode  string `env:"PG_DB_SSLMODE"`
+	Host     string `env:"PG_DB_HOST" json:"host"`
+	Port     string `env:"PG_DB_PORT" json:"port"`
+	Name     string `env:"PG_DB_NAME" json:"name"`
+	User     string `env:"PG_DB_USER" json:"user"`
+	Password string `env:"PG_DB_PASSWORD" json:"-"`
+	SSLMode  string `env:"PG_DB_SSLMODE" json:"ssl_mode"`
 }
 
 func (c *Config) ConnectionString() string {

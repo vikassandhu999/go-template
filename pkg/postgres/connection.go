@@ -55,6 +55,7 @@ func dbValues(cfg *Config) map[string]string {
 	p := map[string]string{}
 	setIfNotEmpty(p, "dbname", cfg.Name)
 	setIfNotEmpty(p, "user", cfg.User)
+	setIfNotEmpty(p, "password", cfg.Password)
 	setIfNotEmpty(p, "host", cfg.Host)
 	setIfNotEmpty(p, "port", cfg.Port)
 	setIfNotEmpty(p, "sslmode", cfg.SSLMode)

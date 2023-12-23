@@ -4,10 +4,11 @@ set -eEuo pipefail
 
 export PG_DB_HOST=localhost
 export PG_DB_PORT=5432
-export PG_DB_NAME=xobizz_admin
+export PG_DB_NAME=betterx
 export PG_DB_USER=admin
 export PG_DB_PASSWORD=L2KjxOH9al
 export PG_DB_SSLMODE=disable
 
+make generate-templ
 
-go run ./cmd/main.go
+go run ./cmd/app/main.go

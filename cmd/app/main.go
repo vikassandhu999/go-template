@@ -1,14 +1,13 @@
 package main
 
 import (
-	"betterx/internal/controller"
+	"betterx/internal/routes"
 	"betterx/internal/serverenv"
 	"betterx/pkg/logging"
 	"betterx/pkg/postgres"
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os/signal"
 	"syscall"
@@ -19,9 +18,9 @@ import (
 	"github.com/sethvargo/go-envconfig"
 )
 
-type Config struct {
-	db postgres.Config
-}
+// type Config struct {
+// 	db postgres.Config
+// }
 
 func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -49,12 +48,13 @@ func main() {
 func execMain(ctx context.Context) error {
 	logger := logging.FromContext(ctx)
 
-	config := Config{}
-	if err := envconfig.Process(ctx, &config); err != nil {
-		log.Fatal(err)
+	var cfg postgres.Config
+	if err := envconfig.ProcessWith(ctx, &cfg, envconfig.OsLookuper()); err != nil {
+		return fmt.Errorf("failed to process config: %w", err)
 	}
+	logger.Info("Connecting to database with", "config", cfg)
 
-	db, err := postgres.NewWithConfig(ctx, &config.db)
+	db, err := postgres.NewWithConfig(ctx, &cfg)
 	if err != nil {
 		return fmt.Errorf("pgxpool.newwithconfig: %w", err)
 	}
@@ -63,14 +63,14 @@ func execMain(ctx context.Context) error {
 
 	router := mux.NewRouter()
 
-	if err := controller.InitRoutes(ctx, env, router); err != nil {
+	if err := routes.Init(ctx, env, router); err != nil {
 		return fmt.Errorf("controller.initroutes: %w", err)
 	}
 
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
-		Addr:         ":8080",
+		Addr:         "localhost:8080",
 		Handler:      router,
 	}
 	serverErrors := make(chan error, 1)
@@ -88,7 +88,7 @@ func execMain(ctx context.Context) error {
 		return fmt.Errorf("server error: %w", err)
 
 	case <-ctx.Done():
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		logger.Info("got intrupt signal, shutting down server")
 		var multierr *multierror.Error
