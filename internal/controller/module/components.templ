@@ -1,41 +1,29 @@
 package module
 
-import "betterx/model"
-
-templ Layout(name string) {
-	<html class="sl-theme-dark">
-		<head>
-			<title>{ name }</title>
-			<link type="text/css" rel="stylesheet" href="/static/bootstrap-grid.css"/>
-			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/dark.css"/>
-			<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/shoelace-autoloader.js"></script>
-			<style>
-				body {
-					margin: 0;
-					padding: 0;
-			 	}
-			 </style>
-		</head>
-		<body>
-			{ children... }
-		</body>
-	</html>
-}
+import (
+	"betterx/model"
+	"betterx/internal/views"
+)
 
 templ Header() {
-	<header class="d-flex container">
-		<h2>Betterx</h2>
-	</header>
+	<nav class="navbar navbar-expand-lg bg-body-tertiary">
+		<div class="container">
+			<a class="navbar-brand" href="/">Better</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+		</div>
+	</nav>
 }
 
-templ ShowModule(module *model.Module) {
-	<sl-card class="my-2">
-		<strong>{ module.Category }</strong>
-		<br/>
-		{ module.Purpose }
-		<br/>
-		<small>{ module.Domain }</small>
-	</sl-card>
+templ ModuleCard(module *model.Module) {
+	<div class="card mb-3" style="width: 18rem;">
+		<div class="card-body">
+			<h5 class="card-title">{ module.Purpose }</h5>
+			<p class="card-text">{ module.Domain }</p>
+			<a href="#" class="btn btn-primary">Go somewhere</a>
+		</div>
+	</div>
 }
 
 templ ShowError(err error) {
@@ -47,16 +35,21 @@ templ ShowError(err error) {
 }
 
 templ Index(modules []model.Module, err error) {
-	@Layout("Modules") {
+	@views.Layout("Modules") {
 		@Header()
 		<main class="container">
 			if err!=nil {
 				@ShowError(err)
 			} else {
-				<sl-button href="/modules/create">New</sl-button>
+				<h2 class="subheading">Modules</h2>
+				<form class="d-flex align-items-center" method="post" action="/modules">
+					<sl-input name="purpose" required></sl-input>
+					<button class="ms-2" type="submit">Search</button>
+					<button class="ms-2" href="/modules/create">New module</button>
+				</form>
 				<div class="d-flex flex-column py-2">
 					for _,m:=range modules {
-						@ShowModule(&m)
+						@ModuleCard(&m)
 					}
 				</div>
 			}
@@ -64,17 +57,17 @@ templ Index(modules []model.Module, err error) {
 	}
 }
 
-templ Create( err error ) {
-	@Layout("Create module") {
+templ CreatePage( err error ) {
+	@views.Layout("Create module") {
 		@Header()
 		<main class="container">
 			if err!=nil {
 				@ShowError(err)
 			} else {
-				<div class="d-flex align-items-center">
-					<sl-button href="/modules">Back</sl-button>
-					// <h1 class="ms-1">Create module</h1>
-				</div>
+				// <div class="d-flex align-items-center">
+				<sl-button size="small" href="/modules">Back</sl-button>
+				<h2 class="subheading">Create module</h2>
+				// </div>
 				<form class="input-validation-required my-4" method="post" action="/modules">
 					<sl-input name="purpose" label="Purpose" required></sl-input>
 					<br/>

@@ -9,78 +9,21 @@ import (
 	"context"
 )
 
-const createModule = `-- name: CreateModule :one
-INSERT INTO modules (domain, category, purpose) VALUES($1,$2,$3) RETURNING id, domain, category, purpose, structure
-`
-
-type CreateModuleParams struct {
-	Domain   string
-	Category string
-	Purpose  string
-}
-
-func (q *Queries) CreateModule(ctx context.Context, arg CreateModuleParams) (Module, error) {
-	row := q.db.QueryRow(ctx, createModule, arg.Domain, arg.Category, arg.Purpose)
-	var i Module
-	err := row.Scan(
-		&i.ID,
-		&i.Domain,
-		&i.Category,
-		&i.Purpose,
-		&i.Structure,
-	)
-	return i, err
-}
-
-const getModule = `-- name: GetModule :one
-SELECT id, domain, category, purpose, structure FROM modules
+const getPages = `-- name: GetPages :one
+SELECT id, kind, title, slug, working_content_id, published_content_id FROM pages
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetModule(ctx context.Context, id int64) (Module, error) {
-	row := q.db.QueryRow(ctx, getModule, id)
-	var i Module
+func (q *Queries) GetPages(ctx context.Context, id int64) (Page, error) {
+	row := q.db.QueryRow(ctx, getPages, id)
+	var i Page
 	err := row.Scan(
 		&i.ID,
-		&i.Domain,
-		&i.Category,
-		&i.Purpose,
-		&i.Structure,
+		&i.Kind,
+		&i.Title,
+		&i.Slug,
+		&i.WorkingContentID,
+		&i.PublishedContentID,
 	)
 	return i, err
-}
-
-const listModules = `-- name: ListModules :many
-SELECT id, domain, category, purpose, structure FROM modules LIMIT $1 OFFSET $2
-`
-
-type ListModulesParams struct {
-	Limit  int32
-	Offset int32
-}
-
-func (q *Queries) ListModules(ctx context.Context, arg ListModulesParams) ([]Module, error) {
-	rows, err := q.db.Query(ctx, listModules, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Module
-	for rows.Next() {
-		var i Module
-		if err := rows.Scan(
-			&i.ID,
-			&i.Domain,
-			&i.Category,
-			&i.Purpose,
-			&i.Structure,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }

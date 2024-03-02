@@ -3,6 +3,7 @@ package routes
 import (
 	"betterx/internal/controller/module"
 	"betterx/internal/serverenv"
+	"betterx/model"
 	"context"
 	"net/http"
 
@@ -12,7 +13,6 @@ import (
 func Init(ctx context.Context, env *serverenv.Env, r *mux.Router) error {
 	sub := r.PathPrefix("").Subrouter()
 
-	// Mount and register static assets before any middleware.
 	{
 		sub := r.PathPrefix("").Subrouter()
 
@@ -20,7 +20,9 @@ func Init(ctx context.Context, env *serverenv.Env, r *mux.Router) error {
 		sub.PathPrefix("/static/").Handler(s)
 	}
 
-	moduleController := module.New(env.DB())
+	db := model.New(env.DB().Pool)
+
+	moduleController := module.New(db)
 	{
 		sub := sub.PathPrefix("/modules").Subrouter()
 		sub.Handle("/create", moduleController.HandleCreate()).Methods(http.MethodGet)

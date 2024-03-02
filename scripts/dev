@@ -8,6 +8,11 @@ export PG_DB_NAME=betterx
 export PG_DB_USER=admin
 export PG_DB_PASSWORD=L2KjxOH9al
 export PG_DB_SSLMODE=disable
+export MONGO_HOST=127.0.0.1
+export MONGO_PORT=27017
+export MONGO_USER=test
+export MONGO_PASSWORD=test
+export MONGO_DB_NAME=test
 
 make generate-templ
 

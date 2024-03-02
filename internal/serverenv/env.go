@@ -1,12 +1,14 @@
 package serverenv
 
 import (
+	"betterx/pkg/mongodb"
 	"betterx/pkg/postgres"
 	"context"
 )
 
 type Env struct {
-	db *postgres.DB
+	db      *postgres.DB
+	mongoDB *mongodb.DB
 }
 
 type Option func(*Env) *Env
@@ -28,6 +30,17 @@ func WithDB(db *postgres.DB) Option {
 
 func (e *Env) DB() *postgres.DB {
 	return e.db
+}
+
+func WithMongo(db *mongodb.DB) Option {
+	return func(e *Env) *Env {
+		e.mongoDB = db
+		return e
+	}
+}
+
+func (e *Env) Mongo() *mongodb.DB {
+	return e.mongoDB
 }
 
 func (e *Env) Close(ctx context.Context) error {

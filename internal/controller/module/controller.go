@@ -1,13 +1,11 @@
 package module
 
-import (
-	"betterx/pkg/postgres"
-)
+import "betterx/model"
 
 type Controller struct {
-	db *postgres.DB
+	db *model.Queries
 }
 
-func New(db *postgres.DB) *Controller {
+func New(db *model.Queries) *Controller {
 	return &Controller{db: db}
 }

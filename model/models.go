@@ -8,48 +8,32 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Item struct {
-	ID          int64
-	SectionID   int32
-	Name        string
-	Type        pgtype.Text
-	Duration    pgtype.Int4
-	Difficulty  pgtype.Text
-	Description pgtype.Text
+type CoachingPage struct {
+	CoachingID int32
+	PageID     int32
 }
 
-type Module struct {
-	ID        int64
-	Domain    string
-	Category  string
-	Purpose   string
-	Structure []byte
+type Content struct {
+	ID            int64
+	PageID        int32
+	Html          pgtype.Text
+	Css           pgtype.Text
+	JsonStructure []byte
+	PublisedAt    pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+	CreatedAt     pgtype.Timestamptz
 }
 
-type Section struct {
-	ID       int64
-	ModuleID int32
-	Name     string
-	Position pgtype.Int4
+type MeetingPage struct {
+	MeetingID int32
+	PageID    int32
 }
 
-type Variation struct {
-	ID          int64
-	ModuleID    int32
-	Name        string
-	Description pgtype.Text
-}
-
-type VariationsItem struct {
-	ID          int64
-	VariationID int32
-	ItemID      int32
-	Position    pgtype.Int4
-}
-
-type VariationsSection struct {
-	ID          int64
-	VariationID int32
-	SectionID   int32
-	Position    pgtype.Int4
+type Page struct {
+	ID                 int64
+	Kind               int32
+	Title              pgtype.Text
+	Slug               pgtype.Text
+	WorkingContentID   int32
+	PublishedContentID pgtype.Int4
 }

@@ -4,6 +4,7 @@ import (
 	"betterx/internal/routes"
 	"betterx/internal/serverenv"
 	"betterx/pkg/logging"
+	"betterx/pkg/mongodb"
 	"betterx/pkg/postgres"
 	"context"
 	"errors"
@@ -18,9 +19,10 @@ import (
 	"github.com/sethvargo/go-envconfig"
 )
 
-// type Config struct {
-// 	db postgres.Config
-// }
+type Config struct {
+	Postgres postgres.Config
+	MongoDB  mongodb.Config
+}
 
 func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -48,18 +50,23 @@ func main() {
 func execMain(ctx context.Context) error {
 	logger := logging.FromContext(ctx)
 
-	var cfg postgres.Config
+	var cfg Config
 	if err := envconfig.ProcessWith(ctx, &cfg, envconfig.OsLookuper()); err != nil {
 		return fmt.Errorf("failed to process config: %w", err)
 	}
-	logger.Info("Connecting to database with", "config", cfg)
+	logger.Info("Parsed config", "config", cfg)
 
-	db, err := postgres.NewWithConfig(ctx, &cfg)
+	postgresDB, err := postgres.NewWithConfig(ctx, &cfg.Postgres)
 	if err != nil {
-		return fmt.Errorf("pgxpool.newwithconfig: %w", err)
+		return fmt.Errorf("postgres.newwithconfig: %w", err)
 	}
 
-	env := serverenv.New(serverenv.WithDB(db))
+	mongoDB, err := mongodb.NewWithConfig(ctx, &cfg.MongoDB)
+	if err != nil {
+		return fmt.Errorf("mongodb.newwithconfig: %w", err)
+	}
+
+	env := serverenv.New(serverenv.WithDB(postgresDB), serverenv.WithMongo(mongoDB))
 
 	router := mux.NewRouter()
 
