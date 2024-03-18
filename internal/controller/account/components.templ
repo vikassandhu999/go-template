@@ -1,0 +1,82 @@
+package account
+
+import (
+	"betterx/internal/views"
+)
+
+// templ Header() {
+// 	<nav class="navbar navbar-expand-lg bg-body-tertiary">
+// 		<div class="container">
+// 			<a class="navbar-brand" href="/">Subscriptions App</a>
+// 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+// 				<span class="navbar-toggler-icon"></span>
+// 			</button>
+// 		</div>
+// 	</nav>
+// }
+
+// templ ModuleCard(module *model.Module) {
+// 	<div class="card mb-3" style="width: 18rem;">
+// 		<div class="card-body">
+// 			<h5 class="card-title">{ module.Purpose }</h5>
+// 			<p class="card-text">{ module.Domain }</p>
+// 			<a href="#" class="btn btn-primary">Go somewhere</a>
+// 		</div>
+// 	</div>
+// }
+
+templ ShowError(err error) {
+	<div class="flex p-2">
+		<strong>{ err.Error() }</strong>
+	</div>
+}
+
+// templ Index(modules []model.Module, err error) {
+// 	@views.Layout("Modules") {
+// 		@Header()
+// 		<main class="container">
+// 			if err!=nil {
+// 				@ShowError(err)
+// 			} else {
+// 				<h2 class="subheading">Modules</h2>
+// 				<form class="d-flex align-items-center" method="post" action="/modules">
+// 					<input name="purpose" required></input>
+// 					<button class="ms-2" type="submit">Search</button>
+// 					<button class="ms-2" href="/modules/create">New module</button>
+// 				</form>
+// 				<div class="d-flex flex-column py-2">
+// 					for _,m:=range modules {
+// 						@ModuleCard(&m)
+// 					}
+// 				</div>
+// 			}
+// 		</main>
+// 	}
+// }
+
+templ CreatePage(err error) {
+	@views.Layout("Create account") {
+		<main class="w-full pt-6">
+			if err != nil {
+				@ShowError(err)
+			} else {
+				<form class="p-2 max-w-lg mx-auto" method="post" action="/accounts/create">
+					<h2 class="text-xl font-bold mb-6">Create account</h2>
+					<div class="mb-6">
+						<label for="domain" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Domain</label>
+						<input type="domain" id="domain" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="kaizencorp" required/>
+					</div>
+					<div class="mb-6">
+						<label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email address</label>
+						<input type="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="kai@kaizen.com" required/>
+					</div>
+					<div class="mb-6">
+						<label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+						<input type="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="•••••••••" required/>
+					</div>
+					<button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+				</form>
+			}
+		</main>
+	}
+}

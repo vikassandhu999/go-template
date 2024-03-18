@@ -8,32 +8,29 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type CoachingPage struct {
-	CoachingID int32
-	PageID     int32
+type Account struct {
+	ID       int32
+	Domain   string
+	Name     string
+	Email    string
+	Password string
 }
 
-type Content struct {
-	ID            int64
-	PageID        int32
-	Html          pgtype.Text
-	Css           pgtype.Text
-	JsonStructure []byte
-	PublisedAt    pgtype.Timestamptz
-	UpdatedAt     pgtype.Timestamptz
-	CreatedAt     pgtype.Timestamptz
+type Plan struct {
+	ID                int32
+	Name              string
+	Cost              pgtype.Numeric
+	BillingPeriodDays pgtype.Int4
 }
 
-type MeetingPage struct {
-	MeetingID int32
-	PageID    int32
-}
-
-type Page struct {
-	ID                 int64
-	Kind               int32
-	Title              pgtype.Text
-	Slug               pgtype.Text
-	WorkingContentID   int32
-	PublishedContentID pgtype.Int4
+type Subscription struct {
+	ID             int32
+	AccountID      pgtype.Int4
+	PlanID         pgtype.Int4
+	StartDate      pgtype.Timestamptz
+	EndDate        pgtype.Timestamptz
+	TrialStartDate pgtype.Timestamptz
+	TrialEndDate   pgtype.Timestamptz
+	Status         pgtype.Int2
+	Cost           pgtype.Numeric
 }

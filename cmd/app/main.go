@@ -61,12 +61,7 @@ func execMain(ctx context.Context) error {
 		return fmt.Errorf("postgres.newwithconfig: %w", err)
 	}
 
-	mongoDB, err := mongodb.NewWithConfig(ctx, &cfg.MongoDB)
-	if err != nil {
-		return fmt.Errorf("mongodb.newwithconfig: %w", err)
-	}
-
-	env := serverenv.New(serverenv.WithDB(postgresDB), serverenv.WithMongo(mongoDB))
+	env := serverenv.New(serverenv.WithDB(postgresDB))
 
 	router := mux.NewRouter()
 
